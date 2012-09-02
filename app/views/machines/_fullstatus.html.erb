@@ -1,0 +1,17 @@
+<% fs = fullstatus(server_name,serv) %>
+<dl class="dl-horizontal">
+	<% fs.each do |key,val|%>
+		<% unless val.blank? %>
+			<% unless key.match("logPaths") %>
+				<dt><%= key %>:</dt>
+				<dd><%= val.to_s.downcase %></dd>
+				<% else %>
+					<% val.each do |k,v| %>
+						<dt><%= k.to_s %>:</dt>
+						<dd><%= link_to "Log", "##{server_name.split(/\./).first}_#{v.split(/\//).last.split(/\./).first}", "data-toggle" => "modal" %><div class="modal hide fade" id="<%= server_name.split(/\./).first + '_' + v.to_s.split(/\//).last.split(/\./).first %>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"><%= render "logs", :server_name => server_name, :logfile => v.to_s %></div></dd>
+					<% end %>
+			<% end %>
+		<% end %>
+	<% end %>
+
+</dl>

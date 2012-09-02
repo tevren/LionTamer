@@ -1,0 +1,91 @@
+<% i = 1 %>
+<div class="accordion" id="accordion1">
+<% @machines_fullinfo.each do |machine| %>
+	<% fullinfo = fullstatus(machine[:name],"info") %>
+
+   		<div class="accordion-group">
+	     	<div class="accordion-heading">
+	    		<a class="accordion-toggle" data-toggle="collapse" data-parent="accordion1" href="#collapse<%= i %>"><%= machine[:name]%></a>
+	    	</div>
+			<div id="collapse<%= i %>" class="accordion-body collapse in">
+				<div class="accordion-inner">
+					<dl class="dl-horizontal">
+						<dt>Name:</dt>
+						<dd><%= fullinfo['computerName'] %></dd>
+
+						<dt>Serial:</dt>
+						<dd><%= machine[:serial]%></dd>
+
+						<dt>Model:</dt>
+						<dd><%= machine[:warranty_info][:model] %></dd>
+
+						<dt>CPU:</dt>
+						<dd><%= "#{number_with_precision(fullinfo['computerInfo']['cpuSpeed'].to_f/1000000000.to_f, :precision => 2)} GHz #{fullinfo['computerInfo']['cpuKind']}" %></dd>
+
+						<dt>Memory:</dt>
+						<dd><%= "#{number_with_precision(fullinfo['computerInfo']['memorySize'].to_f/1000000000.to_f, :precision => 2)} GB"%></dd>
+
+						<dt>CPU Usage:</dt>
+						<dd><%= "#{number_with_precision(fullinfo['cpuUsageBy100'].to_f/100.to_f, :precision => 2)}%"%></dd>
+
+						<dt>IP Address:</dt>
+						<dd><%= fullinfo['interfaceInfosArray'].first['ipAddress'] %></dd>
+
+						<dt>Server Version:</dt>
+						<dd><%= fullinfo['version']%></dd>
+
+						<dt>Kernel Version:</dt>
+						<dd><%= fullinfo['kernelVersion']%></dd>
+
+						<dt>Uptime:</dt>
+						<dd><%= Time.diff(Time.now, fullinfo['bootTime'])[:diff] %></dd>
+
+						<dt>Repair Covered:</dt>
+						<dd><%= machine[:warranty_info][:repair_covered] %> </dd>
+
+						<dt>Expiration Date:</dt>
+						<dd><%= machine[:warranty_info][:expiration_date] %></dd>
+
+						<dt>ASD:</dt>
+						<% if machine[:warranty_info][:asdinfo].nil? then machine[:warranty_info][:asdinfo] = "unknown" end %>
+						<dd><%= machine[:warranty_info][:asdinfo].to_s %></dd>
+
+						<dt>Boot Volume:</dt>
+						<dd><%= fullinfo['bootVolume'] %></dd>
+
+					</dl>
+
+
+					<div class="accordion" id="accordion2">
+						<% machine[:services].each do |serv| %>
+						<% unless serv.match(/info|certs|config|accounts|bonjour|backup|filebrowser|network|proxy|signaler|teams/) %>
+							<% status = check_status(machine[:name],serv) %>
+								<div class="accordion-group">
+									<div class="accordion-heading">
+											<% if status == true %>
+											<a class="accordion-toggle  badge-success" data-toggle="collapse" data-parent="accordion2" href="#collapse_<%= machine[:name].split(/\./).first + '_' + serv %>"><%= serv %></a>
+											<% else %>
+											<a class="accordion-toggle  badge-warning" data-toggle="collapse" data-parent="accordion2" href="#collapse_<%= machine[:name].split(/\./).first + '_' + serv %>"><%= serv %></a>
+											<% end %>
+									</div>
+									<div id="collapse_<%= machine[:name].split(/\./).first + '_' + serv %>" class="accordion-body collapse in">
+										<div class="accordion-inner">
+											<% if status == true %>
+											<%= link_to ' Deactivate', {:controller => "machines", :action => "deactivate_service", :server_name => machine[:name], :service => serv}, confirm: "Are you sure you want to deactivate #{serv}?", :class => "pull-right icon-remove btn btn-primary btn-mini" %>
+												<%= render "fullstatus", :server_name => machine[:name], :serv => serv %>
+											<% else %>
+											<%= link_to ' Activate', {:controller => "machines", :action => "activate_service", :server_name => machine[:name], :service => serv}, confirm: "Are you sure you want to activate #{serv}?", :class => "pull-right icon-ok btn btn-primary btn-mini" %>
+											<% end %>
+										</div>
+									</div>
+								</div>
+							<% end %>
+						<% end %>
+					</div>
+					
+				</div>
+			</div>
+	    </div>
+    <% i = i + 1 %>
+<% end %>
+</div>
