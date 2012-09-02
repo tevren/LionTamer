@@ -7,10 +7,6 @@ gem 'rails', '3.2.6'
 
 gem 'sqlite3'
 gem "omniauth-ldap", :git => "git://github.com/intridea/omniauth-ldap.git"
-gem "cancan"
-gem "whenever"
-gem "plist"
-
 gem 'osxwarranty', :git => "git://github.com/tevren/osxwarranty.git"
 gem 'LionAdmin', :git => "git://github.com/tevren/LionAdmin.git"
 gem 'twitter-bootstrap-rails', :git => 'git://github.com/seyhunak/twitter-bootstrap-rails.git'
